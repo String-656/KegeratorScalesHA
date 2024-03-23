@@ -1,0 +1,152 @@
+
+#------------------
+- alias: 'Calibrate Scale One' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_one_calibrate
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_one_scale
+        value: "{{ ((states('input_number.scale_one_cal_weight' ) | float) / ((states('sensor.kegerator_scale_1') | float) - (states('input_number.scale_one_offset')) | float)) }}"
+        
+- alias: 'Store Scale One Offset' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_one_store_offset
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_one_offset
+        value: "{{ (states('sensor.kegerator_scale_1') | float) }}"
+        
+- alias: 'Store Scale One Keg Weight' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_one_store_empty
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_one_keg
+        value: "{{ (states('sensor.scale_1_weight') | float) }}"
+        
+- alias: 'Calibrate Scale Two' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_two_calibrate
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_two_scale
+        value: "{{ ((states('input_number.scale_two_cal_weight' ) | float) / ((states('sensor.kegerator_scale_2') | float) - (states('input_number.scale_two_offset')) | float)) }}"
+        
+- alias: 'Store Scale Two Offset' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_two_store_offset
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_two_offset
+        value: "{{ (states('sensor.kegerator_scale_2') | float) }}"
+        
+- alias: 'Store Scale Two Keg Weight' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_two_store_empty
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_two_keg
+        value: "{{ (states('sensor.scale_2_weight') | float) }}"
+
+- alias: 'Calibrate Scale Three' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_three_calibrate
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_three_scale
+        value: "{{ ((states('input_number.scale_three_cal_weight' ) | float) / ((states('sensor.kegerator_scale_3') | float) - (states('input_number.scale_three_offset')) | float)) }}"
+        
+- alias: 'Store Scale Three Offset' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_three_store_offset
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_three_offset
+        value: "{{ (states('sensor.kegerator_scale_3') | float) }}"
+        
+- alias: 'Store Scale Three Keg Weight' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_three_store_empty
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_three_keg
+        value: "{{ (states('sensor.scale_3_weight') | float) }}"
+        
+- alias: 'Calibrate Scale Four' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_four_calibrate
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_four_scale
+        value: "{{ ((states('input_number.scale_four_cal_weight' ) | float) / ((states('sensor.kegerator_scale_4') | float) - (states('input_number.scale_four_offset')) | float)) }}"
+        
+- alias: 'Store Scale Four Offset' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_four_store_offset
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_four_offset
+        value: "{{ (states('sensor.kegerator_scale_4') | float) }}"
+        
+- alias: 'Store Scale Four Keg Weight' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_four_store_empty
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_four_keg
+        value: "{{ (states('sensor.scale_4_weight') | float) }}"
+
+- alias: 'Calibrate Scale Five' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_five_calibrate
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_five_scale
+        value: "{{ ((states('input_number.scale_five_cal_weight' ) | float) / ((states('sensor.kegerator_scale_5') | float) - (states('input_number.scale_five_offset')) | float)) }}"
+        
+- alias: 'Store Scale Five Offset' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_five_store_offset
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_five_offset
+        value: "{{ (states('sensor.kegerator_scale_5') | float) }}"
+        
+- alias: 'Store Scale Five Keg Weight' 
+  trigger:
+    - platform: state
+      entity_id: input_button.scale_five_store_empty
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.scale_five_keg
+        value: "{{ (states('sensor.scale_5_weight') | float) }}"
+        
