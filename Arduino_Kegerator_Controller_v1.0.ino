@@ -194,21 +194,18 @@ void mqttWIFICheck(){
     }
   }
   if (!client.connected()) {
-    reconnect();
+    while ((!client.connected() && WiFi.status() == WL_CONNECTED)) {
+      serialWrite(4,0);
+      if (client.connect(deviceId, user, key)) {
+        client.subscribe("HomassistantCMD");
+        serialWrite(5,0);
+      } else {
+          serialWrite(6,0);
+      }
+      delay(5000);
+    }
   }
   client.loop();
-}
-void reconnect() {
-  while (!client.connected()) {
-    serialWrite(4,0);
-    if (client.connect(deviceId, user, key)) {
-      client.subscribe("HomassistantCMD");
-      serialWrite(5,0);
-    } else {
-        serialWrite(6,0);
-    }
-    delay(5000);
-  }
 }
 void mqttPublish(){
   for (int i = 0; i<=8; i++){
