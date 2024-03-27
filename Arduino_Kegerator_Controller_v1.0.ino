@@ -5,11 +5,11 @@
 
 DS18B20 ds(2);
 #define DEBUG 0 
-char ssid[] = "WoonanWiFi";        // your network SSID (name)
-char pass[] = "redgreenblue";    // your network password (use for WPA, or use as key for WEP)
+char ssid[] = "WIFI NAME";        // your network SSID (name)
+char pass[] = "PASSWORD";    // your network password (use for WPA, or use as key for WEP)
 char buf[14];                                                                    // Buffer to store the sensor value
 const char* deviceId  = "KegeratorClient";                                        // Name of the sensor
-const char* user = "WoonanKegerator";
+const char* user = "Kegerator";
 const char* key = "drinks";
 const char* IOstateTopics[9] = {
   "home-assistant/Input/Scale1",            //Array 0     //Pin 3 - 4
@@ -32,7 +32,7 @@ const long interval = 500;
 unsigned long previousMillis = 0;
 
 // MQTT server settings
-IPAddress mqttServer(172, 24, 10, 13);
+IPAddress mqttServer(xx, xx, xx, xx);
 int mqttPort = 1883;
 PubSubClient client(wifiClient);
 
