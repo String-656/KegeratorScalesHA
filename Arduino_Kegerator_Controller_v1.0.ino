@@ -5,12 +5,12 @@
 
 DS18B20 ds(2);
 #define DEBUG 0 
-char ssid[] = "yourwifiname";        // your network SSID (name)
-char pass[] = "yourwifipassword";    // your network password (use for WPA, or use as key for WEP)
+char ssid[] = "WoonanWiFi";        // your network SSID (name)
+char pass[] = "redgreenblue";    // your network password (use for WPA, or use as key for WEP)
 char buf[14];                                                                    // Buffer to store the sensor value
 const char* deviceId  = "KegeratorClient";                                        // Name of the sensor
-const char* user = "MQTTUSER";
-const char* key = "MQTTPass";
+const char* user = "WoonanKegerator";
+const char* key = "drinks";
 const char* IOstateTopics[9] = {
   "home-assistant/Input/Scale1",            //Array 0     //Pin 3 - 4
   "home-assistant/Input/Scale2",            //Array 1     //Pin 5 - 6
@@ -32,7 +32,7 @@ const long interval = 500;
 unsigned long previousMillis = 0;
 
 // MQTT server settings
-IPAddress mqttServer(XX, XX, XX, XX);   // YOUR IP
+IPAddress mqttServer(172, 24, 10, 13);
 int mqttPort = 1883;
 PubSubClient client(wifiClient);
 
@@ -85,19 +85,20 @@ void initializeValues(){
 }
 
 void loop() {
-  
+
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
-    // save the last time a message was sent
+    mqttWIFICheck();
+    
+    readsensors();
+    readinputs();
+    previousMillis = currentMillis;
+    
     if(!rebooting){
-      readsensors();
-      mqttCheck();
-      readinputs();
       mqttPublish();
-      previousMillis = currentMillis;
     }
     watchDog ++;
-    if((rebooting) && (watchDog > 120)){ // 60 seconds to boot - stops the original bad values from messing up homeassistant trends. Note- this needs to be longer than the spike removal so it normalises
+    if((rebooting) && (watchDog > 180)){ // 30 seconds to boot - stops the original bad values from messing up homeassistant trends. Note- this needs to be longer than the spike removal so it normalises
       rebooting = false;
     }
   }
@@ -107,22 +108,22 @@ void loop() {
 void readinputs(){
   IOStates[8] = watchDog;
 
-  //NOTE !!!!!!!!!! if HX711 unresponsive, the program hangs. Change to <=4 for the gas once printer fixed. - currently only reads 4 scales
+  //NOTE !!!!!!!!!! if HX711 unresponsive, the program hangs. Change to <=4 for the gas once printer fixed.
     for (int i = 0; i<=3; i++){
       float scaleValue = Scales[i].get_value();
       float scaleDifference; 
       
       scaleDifference = IOStatesPast[i] - scaleValue;
       // Detect change - note this value might need to be tweaked. to remove spikes when the compressor kicks in / the odd spike? 
-      if(abs(scaleDifference) < 800){
+      if(abs(scaleDifference) < 1000){
             IOStates[i] = scaleValue;
             IOStatesError[i] = 0;
       }
       else {
         IOStatesError[i] = IOStatesError[i] + 1;
       }
-      // Detect large spikes, after 50 values, if the value is greater than 800 value, it's a legit change. 800 ticks just an arbitrary  val, 50 error counts is just roughly 10 seconds of readings. 
-      if(IOStatesError[i] > 50){     
+      // Detect large spikes, after 100 ~ 50 seconds, if the value is greater than 1000 value, it's a legit change. 1000 ticks just an arbitrary  val, 50 error counts is just roughly 10 seconds of readings. 
+      if(IOStatesError[i] > 100){     
         IOStates[i] = scaleValue;
         IOStatesError[i] = 0;
       }
@@ -136,13 +137,13 @@ void readsensors() {
     uint8_t address[8];                               
     ds.getAddress(address);                               //store address
 
-    if (address[7] == 67){                                 //Ambient - these numbers are from your Device. They will be different, use DEBUG to find yours
+    if (address[7] == 67){                                 //Ambient
       IOStates[7] = temp;
     } 
-    else if (address[7] == 131) {                           //Font Temp - these numbers are from your Device. They will be different, use DEBUG to find yours
+    else if (address[7] == 131) {                           //Font Temp
       IOStates[6] = temp;
     }
-    else if (address[7] == 188) {                           //Kegerator - these numbers are from your Device. They will be different, use DEBUG to find yours
+    else if (address[7] == 188) {                           //Kegerator
       IOStates[5] = temp;
     }
     
@@ -183,7 +184,15 @@ void readsensors() {
   }
 }
  
-void mqttCheck(){
+void mqttWIFICheck(){
+  //Wifi connection gets dropped - need to re-connect. 
+  if (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
+      // failed, retry 
+      serialWrite(2,0);
+      delay(5000);
+    }
+  }
   if (!client.connected()) {
     reconnect();
   }
